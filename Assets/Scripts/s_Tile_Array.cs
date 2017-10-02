@@ -141,7 +141,129 @@ public class s_Tile_Array
 
         return matches.Distinct();
     }
+
+    private IEnumerable<GameObject> GetEntireRow(GameObject go)
+    {
+        List<GameObject> matches = new List<GameObject>();
+        int row = go.GetComponent<s_Tile_Shapes>().row;
+        for(int column = 0; column < s_Constants.columns; column++)
+        {
+            matches.Add(tiles[row, column]);
+        }
+        return matches;
+    }
+
+    private IEnumerable<GameObject> GetEntireColumn(GameObject go)
+    {
+        List<GameObject> matches = new List<GameObject>();
+        int column = go.GetComponent<s_Tile_Shapes>().column;
+        for (int row = 0; column < s_Constants.rows; row++)
+        {
+            matches.Add(tiles[row, column]);
+        }
+        return matches;
+    }
+
+    private bool ContainsDestroyRowColumnBonus(IEnumerable<GameObject> matches)
+    {
+        if(matches.Count() >= s_Constants.minTilesToMatch)
+        {
+            foreach(var go in matches)
+            {
+                if(cardTypeUtilities.includesRemoveWholeRowColumn(go.GetComponent<s_Tile_Shapes>().Card))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public s_Match_Information GetMaches(GameObject go)
+    {
+        s_Match_Information matchesInfo = new s_Match_Information();
+        var horizontalMatches = GetMatchesHorizontally(go);
+        if(ContainsDestroyRowColumnBonus(horizontalMatches))
+        {
+            horizontalMatches = GetEntireRow(go);
+            if(!cardTypeUtilities.includesRemoveWholeRowColumn(matchesInfo.cardContained))
+            {
+                matchesInfo.cardContained |= s_Card_Type.RemoveWholeRowColumn;
+            }
+        }
+        matchesInfo.addObjectRange(horizontalMatches);
+
+        var verticalMatches = GetMatchesVertically(go);
+        if(ContainsDestroyRowColumnBonus(verticalMatches))
+        {
+            verticalMatches = GetEntireColumn(go);
+            if(!cardTypeUtilities.includesRemoveWholeRowColumn(matchesInfo.cardContained))
+            {
+                matchesInfo.cardContained |= s_Card_Type.RemoveWholeRowColumn;
+            }
+        }
+        matchesInfo.addObjectRange(verticalMatches);
+
+        return matchesInfo;
+    }
+
+    public IEnumerable<GameObject> GetMatches(IEnumerable<GameObject> gos)
+    {
+        List<GameObject> matches = new List<GameObject>();
+        foreach(var go in gos)
+        {
+            matches.AddRange(GetMaches(go).matchedTile);
+        }
+        return matches.Distinct();
+    }
+
+    public void Remove(GameObject item)
+    {
+        tiles[item.GetComponent<s_Tile_Shapes>().row, item.GetComponent<s_Tile_Shapes>().column] = null;
+    }
+
+    public s_moved_Tile_Info Collapse(IEnumerable<int> columns)
+    {
+        s_moved_Tile_Info collapseInfo = new s_moved_Tile_Info();
+
+        foreach(var column in columns)
+        {
+            for(int row = 0; row < s_Constants.rows - 1; row++)
+            {
+                if(tiles[row, column] == null)
+                {
+                    for(int row2 = row + 1; row2 < s_Constants.rows; row2++)
+                    {
+                        collapseInfo.maxMoveDistance = row2 - row;
+                    }
+
+                    tiles[row, column].GetComponent<s_Tile_Shapes>().row = row;
+                    tiles[row, column].GetComponent<s_Tile_Shapes>().column = column;
+
+                    collapseInfo.addTile(tiles[row, column]);
+                    break;
+                }
+            }
+        }
+        return collapseInfo;
+    }
+
+    public IEnumerable<ShapeInfo> GetEmptyItemsOnColumn(int column)
+    {
+        List<ShapeInfo> emptyItems = new List<ShapeInfo>();
+        for(int row = 0; row < s_Constants.rows; row++)
+        {
+            if(tiles[row, column] == null)
+            {
+                emptyItems.Add(new ShapeInfo() { Row = row, Column = column });
+            }
+            return emptyItems;
+        }
+    }
+
+    public class ShapeInfo
+    {
+        public int Column { get; set; }
+        public int Row { get; set; }
+    }
 }
-
-
-///https://dgkanatsios.com/2015/02/25/building-a-match-3-game-in-unity-3/
