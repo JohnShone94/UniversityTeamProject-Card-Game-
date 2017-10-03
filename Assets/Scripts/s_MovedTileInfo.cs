@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class s_moved_Tile_Info
+public class s_MovedTileInfo
 {
     private List<GameObject> newTile { get; set; }
     public int maxMoveDistance { get; set; }
 
-    public IEnumerable<GameObject> movedTile
+    public IEnumerable<GameObject> Moved_Tile
     {
         get
         {
@@ -16,7 +16,7 @@ public class s_moved_Tile_Info
         }
     }
 
-    public void addTile(GameObject tile)
+    public void Add_Tile(GameObject tile)
     {
         if(!newTile.Contains(tile))
         {
@@ -24,7 +24,7 @@ public class s_moved_Tile_Info
         }
     }
 
-    public s_moved_Tile_Info()
+    public s_MovedTileInfo()
     {
         newTile = new List<GameObject>();
     }

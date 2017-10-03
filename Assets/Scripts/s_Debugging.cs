@@ -1,74 +1,60 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class s_Debugging : MonoBehaviour
 {
-    public static string[,] FillTilesArray()
+    public static string[,] Fill_Tiles_Array()
     {
-        string[,] shapes = new string[s_Constants.rows, s_Constants.columns];
+        string[,] tiles = new string[s_Constants.rows, s_Constants.columns];
         TextAsset txt = Resources.Load("Level") as TextAsset;
         string level = txt.text;
 
         string[] lines = level.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         for(int row = s_Constants.rows - 1; row >= 0; row--)
         {
-            string[] items = lines[row].Split("|");
+            string[] items = lines[row].Split('|');
             for(int column = 0; column < s_Constants.columns; column++)
             {
-                shapes[row, column] = items[column];
+                tiles[row, column] = items[column];
             }
         }
-        return shapes;
+        return tiles;
     }
 
-    private GameObject GetSpecificTileOrCard(string info)
+    public static string Get_Array_Contents(s_TileArray tiles)
     {
-        var tokens = info.Split('_');
-
-        if (tokens.Count() == 1)
+        string empty = string.Empty;
+        for (int row = s_Constants.rows - 1; row >= 0; row--)
         {
-            foreach (var item in TilePrefabs)
+
+            for (int column = 0; column < s_Constants.columns; column++)
             {
-                if (item.GetComponent<s_Tile_Shapes>().Type.Contains(tokens[0].Trim()))
-                    return item;
+                if (tiles[row, column] == null)
+                {
+                    empty += "NULL |";
+                }
+                else
+                {
+                    var tile = tiles[row, column].GetComponent<s_TileShapes>();
+                    empty += tile.row.ToString("D2") + "-" + tile.column.ToString("D2");
+                    empty += tile.type.Substring(5, 2);
+
+                    if (s_Card_Utilities.Includes_Remove_Whole_Row_Column(tile.Card))
+                    {
+                        empty += "B";
+                    }
+                    else
+                    {
+                        empty += " ";
+                    }
+                    empty += " | ";
+                }
             }
-
+            empty += Environment.NewLine;
         }
-        else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
-        {
-            foreach (var item in CardPrefabs)
-            {
-                if (item.name.Contains(tokens[0].Trim()))
-                    return item;
-            }
-        }
-
-        throw new System.Exception("Wrong type, check your premade level");
-    }
-
-    public void InitialiseTileAndSpawnPos()
-    {
-        InitializeVariables();
-        var premadeLevel = DebugUtilities.FillShapesArrayFromResourcesData();
-        if(tiles != null)
-        {
-            DestroyAllTiles();
-        }
-
-        shapes = new s_Tile_Array();
-        SpawnPosotions = new Vector2[s_Constants.columns];
-
-        for(int row = 0; row < s_Constants.rows; row++)
-        {
-            for(int column = 0; column < s_Constants.columns; column++)
-            {
-                GameObject newTile = null;
-                newTile = GetSpecificTileOrCard(premadeLevel[row, column]);
-                InstantiateAndPlaceNewTile(row, column, newTile);
-
-            }
-        }
-        SetupSpawnPositions();
+        return empty;
     }
 }

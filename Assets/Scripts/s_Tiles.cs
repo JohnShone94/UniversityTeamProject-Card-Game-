@@ -3,30 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class s_Tile_Shapes : MonoBehaviour
+public class s_TileShapes : MonoBehaviour
 {
-    public s_Card_Type Card { get; set; }
+    public s_CardType Card { get; set; }
     public int column { get; set; }
     public int row { get; set; }
 
     public string type { get; set; }
 
-    public s_Tile_Shapes()
+    public s_TileShapes()
     {
-        Card = s_Card_Type.None;
+        Card = s_CardType.None;
     }
 
-    public bool isSameType(s_Tile_Shapes otherShape)
+    public bool Is_Same_Type(s_TileShapes otherShape)
     {
-        if(otherShape == null || !(otherShape is s_Tile_Shapes))
+        if(otherShape == null || !(otherShape is s_TileShapes))
         {
             throw new ArgumentException("otherShape");
         }
 
-        return string.Compare(this.type, (otherShape as s_Tile_Shapes).type) == 0;
+        return string.Compare(this.type, (otherShape as s_TileShapes).type) == 0;
     }
 
-    public void assignCard(string setType, int setRow, int setColumn)
+    public void Assign_Card(string setType, int setRow, int setColumn)
     {
         if(string.IsNullOrEmpty(type))
         {
@@ -38,7 +38,7 @@ public class s_Tile_Shapes : MonoBehaviour
         type = setType;
     }
 
-    public static void changeColumnRow(s_Tile_Shapes a, s_Tile_Shapes b)
+    public static void Change_Column_Row(s_TileShapes a, s_TileShapes b)
     {
         int tempRow = a.row;
         a.row = b.row;
