@@ -29,7 +29,7 @@ public class s_Shape_Manager : MonoBehaviour
     public SoundManager soundManager;
 }
 
-void Awake()
+public void Awake()
 {
     DebugText.enabled = ShowDebugInfo;
 }
