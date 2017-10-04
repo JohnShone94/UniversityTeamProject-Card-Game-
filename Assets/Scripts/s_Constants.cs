@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class s_Constants
 {
-    public static readonly int rows = 8;
+    public static readonly int rows = 12;
     public static readonly int columns = 8;
     public static readonly float animationTime = 0.2f;
 
