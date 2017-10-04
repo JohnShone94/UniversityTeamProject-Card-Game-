@@ -14,7 +14,7 @@ public class s_TileManager : MonoBehaviour
     private int score;
 
     public readonly Vector2 BottomRight = new Vector2(-1f, -1f);
-    public readonly Vector2 TileSize = new Vector2(0.7f, 0.7f);
+    public readonly Vector2 TileSize = new Vector2(2.56f, 2.56f);
 
     private GameState state = GameState.None;
     private GameObject hitTile = null;
@@ -56,102 +56,35 @@ public class s_TileManager : MonoBehaviour
         }*/
     }
 
-    private IEnumerator Check_Potential_Matches()
+
+    public void Initialize_Candy_And_Spawn_Positions_From_Premade_Level()
     {
-        yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
-        potentialMatches = s_GameUtilities.Find_Next_Match(tiles);
-        if (potentialMatches != null)
+        Initialise_Variables();
+
+        var premadeLevel = s_Debugging.Fill_Tiles_Array();
+        if (tiles != null)
         {
-            while (true)
-            {
-                AnimatePotentialMatchesCoroutine = s_GameUtilities.Game_Utilities(potentialMatches);
-                StartCoroutine(AnimatePotentialMatchesCoroutine);
-                yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
-            }
+            Destroy_All_Tiles();
         }
-    }
 
-    private void Reset_Opacity_On_Potential_Matches()
-    {
-        if (potentialMatches != null)
-            foreach (var item in potentialMatches)
-            {
-                if (item == null) break;
+        tiles = new s_TileArray();
+        SpawnPositions = new Vector2[s_Constants.columns];
 
-                Color c = item.GetComponent<SpriteRenderer>().color;
-                c.a = 1.0f;
-                item.GetComponent<SpriteRenderer>().color = c;
-            }
-    }
-
-    private void Start_Check_For_Potential_Matches()
-    {
-        Stop_Check_For_Potential_Matches();
-        CheckPotentialMatchesCoroutine = Check_Potential_Matches();
-        StartCoroutine(CheckPotentialMatchesCoroutine);
-    }
-
-    private void Stop_Check_For_Potential_Matches()
-    {
-        if (AnimatePotentialMatchesCoroutine != null)
-        {
-            StopCoroutine(AnimatePotentialMatchesCoroutine);
-        }
-        if (CheckPotentialMatchesCoroutine != null)
-        { 
-            StopCoroutine(CheckPotentialMatchesCoroutine);
-        }
-        Reset_Opacity_On_Potential_Matches();
-    }
-
-    private void Initialise_Variables()
-    {
-        score = 0;
-        Show_Score();
-    }
-
-    private void Increase_Score(int amount)
-    {
-        score += amount;
-        Show_Score();
-    }
-
-    private void Show_Score()
-    {
-        ScoreText.text = "Score: " + score.ToString();
-    }
-
-    private GameObject Get_Random_Tile()
-    {
-        return TilePrefabs[Random.Range(0, TilePrefabs.Length)];
-    }
-
-    private void Instantiate_And_Place_New_Tile(int row, int column, GameObject newTile)
-    {
-        GameObject go = Instantiate(newTile, BottomRight + new Vector2(column * TileSize.x, row * TileSize.y),Quaternion.identity) as GameObject;
-
-        go.GetComponent<s_Tiles>().Assign_Card(newTile.GetComponent<s_Tiles>().Type, row, column);
-        tiles[row, column] = go;
-    }
-
-    private void Setup_Spawn_Positions()
-    {
-        for (int column = 0; column < s_Constants.columns; column++)
-        {
-            SpawnPositions[column] = BottomRight
-                + new Vector2(column * TileSize.x, s_Constants.rows * TileSize.y);
-        }
-    }
-
-    private void Destroy_All_Tiles()
-    {
         for (int row = 0; row < s_Constants.rows; row++)
         {
             for (int column = 0; column < s_Constants.columns; column++)
             {
-                Destroy(tiles[row, column]);
+
+                GameObject newTile = null;
+
+                newTile = Get_Specific_Tile_Or_Card(premadeLevel[row, column]);
+
+                Instantiate_And_Place_New_Tile(row, column, newTile);
+
             }
         }
+
+        Setup_Spawn_Positions();
     }
 
     public void Initialise_Tile_And_Spawn_Positions()
@@ -190,144 +123,33 @@ public class s_TileManager : MonoBehaviour
         Setup_Spawn_Positions();
     }
 
-    public void Initialize_Candy_And_Spawn_Positions_From_Premade_Level()
+    private void Instantiate_And_Place_New_Tile(int row, int column, GameObject newTile)
     {
-        Initialise_Variables();
+        GameObject go = Instantiate(newTile, BottomRight + new Vector2(column * TileSize.x, row * TileSize.y), Quaternion.identity) as GameObject;
 
-        var premadeLevel = s_Debugging.Fill_Tiles_Array();
-        if (tiles != null)
+        go.GetComponent<s_Tiles>().Assign_Card(newTile.GetComponent<s_Tiles>().Type, row, column);
+        tiles[row, column] = go;
+    }
+
+    private void Setup_Spawn_Positions()
+    {
+        for (int column = 0; column < s_Constants.columns; column++)
         {
-            Destroy_All_Tiles();
+            SpawnPositions[column] = BottomRight
+                + new Vector2(column * TileSize.x, s_Constants.rows * TileSize.y);
         }
+    }
 
-        tiles = new s_TileArray();
-        SpawnPositions = new Vector2[s_Constants.columns];
-
+    private void Destroy_All_Tiles()
+    {
         for (int row = 0; row < s_Constants.rows; row++)
         {
             for (int column = 0; column < s_Constants.columns; column++)
             {
-
-                GameObject newTile = null;
-
-                newTile = Get_Specific_Tile_Or_Card(premadeLevel[row, column]);
-
-                Instantiate_And_Place_New_Tile(row, column, newTile);
-
+                Destroy(tiles[row, column]);
             }
         }
-
-        Setup_Spawn_Positions();
     }
-
-    private GameObject Get_Specific_Tile_Or_Card(string info)
-    {
-        var tokens = info.Split('_');
-
-        if (tokens.Count() == 1)
-        {
-            foreach (var item in TilePrefabs)
-            {
-                if (item.GetComponent<s_Tiles>().Type.Contains(tokens[0].Trim()))
-                    return item;
-            }
-
-        }
-        /*else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
-        {
-            foreach (var item in CardPrefabs)
-            {
-                if (item.name.Contains(tokens[0].Trim()))
-                    return item;
-            }
-        }*/
-
-        throw new System.Exception("Wrong type, check your premade level");
-    }
-
-    private void Fix_Sorting_Layer(GameObject hitTile, GameObject hitTileTwo)
-    {
-        SpriteRenderer sp1 = hitTile.GetComponent<SpriteRenderer>();
-        SpriteRenderer sp2 = hitTileTwo.GetComponent<SpriteRenderer>();
-        if (sp1.sortingOrder <= sp2.sortingOrder)
-        {
-            sp1.sortingOrder = 1;
-            sp2.sortingOrder = 0;
-        }
-    }
-
-    /*private GameObject Get_Random_Explosion()
-    {
-        return DestroyPrefabs[Random.Range(0, DestroyPrefabs.Length)];
-    }*/
-
-   /* private GameObject GetBonusType(string type)
-    {
-        string color = type.Split('_')[1].Trim();
-        foreach (var item in CardPrefabs)
-        {
-            if (item.GetComponent<s_Tiles>().Type.Contains(color))
-                return item;
-        }
-        throw new System.Exception("Wrong type");
-    }*/
-
-    private void Remove_From_Scene(GameObject item)
-    {
-       // GameObject explosion = Get_Random_Explosion();
-      //  var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
-        //Destroy(newExplosion, s_Constants.removeAnimTime);
-        Destroy(item);
-    }
-
-    private void Move_And_Animate(IEnumerable<GameObject> movedGameObjects, int distance)
-    {
-        foreach (var item in movedGameObjects)
-        {
-            //s_Constants.minMovingAnimTime * distance, BottomRight +
-            item.transform.position = new Vector2(item.GetComponent<s_Tiles>().column * TileSize.x, item.GetComponent<s_Tiles>().row * TileSize.y);
-        }
-    }
-
-    private s_MovedTileInfo Create_New_Tile_In_Specific_Columns(IEnumerable<int> columnsWithMissingTiles)
-    {
-        s_MovedTileInfo newTileInfo = new s_MovedTileInfo();
-
-
-        foreach (int column in columnsWithMissingTiles)
-        {
-            var emptyItems = tiles.Get_Empty_Items_On_Column(column);
-            foreach (var item in emptyItems)
-            {
-                var go = Get_Random_Tile();
-                GameObject newTile = Instantiate(go, SpawnPositions[column], Quaternion.identity)
-                    as GameObject;
-
-                newTile.GetComponent<s_Tiles>().Assign_Card(go.GetComponent<s_Tiles>().Type, item.Row, item.Column);
-
-                if (s_Constants.rows - item.Row > newTileInfo.maxMoveDistance)
-                    newTileInfo.maxMoveDistance = s_Constants.rows - item.Row;
-
-                tiles[item.Row, item.Column] = newTile;
-                newTileInfo.Add_Tile(newTile);
-            }
-        }
-        return newTileInfo;
-    }
-
-    /*private void Create_Bonus(s_Tiles hitTileCache)
-    {
-        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.Type), BottomRight
-            + new Vector2(hitTileCache.column * TileSize.x,
-                hitTileCache.row * TileSize.y), Quaternion.identity) as GameObject;
-
-        tiles[hitTileCache.row, hitTileCache.column] = Bonus;
-        var BonusShape = Bonus.GetComponent<s_Tiles>();
-
-        BonusShape.Assign_Card(hitTileCache.Type, hitTileCache.row, hitTileCache.column);
-
-        BonusShape.Card |= s_CardType.RemoveWholeRowColumn;
-    }*/
 
     void Update()
     {
@@ -383,14 +205,25 @@ public class s_TileManager : MonoBehaviour
         }
     }
 
+    private void Fix_Sorting_Layer(GameObject hitTile, GameObject hitTileTwo)
+    {
+        SpriteRenderer sp1 = hitTile.GetComponent<SpriteRenderer>();
+        SpriteRenderer sp2 = hitTileTwo.GetComponent<SpriteRenderer>();
+        if (sp1.sortingOrder <= sp2.sortingOrder)
+        {
+            sp1.sortingOrder = 1;
+            sp2.sortingOrder = 0;
+        }
+    }
+
     private IEnumerator Find_Matches_And_Collapse(RaycastHit2D hit2)
     {
 
         var hitTileTwo = hit2.collider.gameObject;
         tiles.Swap(hitTile, hitTileTwo);
 
-        hitTile.transform.position = hitTileTwo.transform.position;
-        hitTileTwo.transform.position = hitTile.transform.position;
+        hitTile.transform.positionTo(s_Constants.animationTime, hitTileTwo.transform.position);
+        hitTileTwo.transform.positionTo(s_Constants.animationTime, hitTile.transform.position);
         yield return new WaitForSeconds(s_Constants.animationTime);
 
         var hitGomatchesInfo = tiles.Get_Matches(hitTile);
@@ -400,24 +233,24 @@ public class s_TileManager : MonoBehaviour
 
         if (totalMatches.Count() < s_Constants.minTilesToMatch)
         {
-            hitTile.transform.position =  hitTileTwo.transform.position;
-            hitTileTwo.transform.position = hitTile.transform.position;
+            hitTile.transform.positionTo(s_Constants.animationTime, hitTileTwo.transform.position);
+            hitTileTwo.transform.positionTo(s_Constants.animationTime, hitTile.transform.position);
             yield return new WaitForSeconds(s_Constants.animationTime);
 
             tiles.Undo_Swap();
         }
 
-        bool addBonus = totalMatches.Count() >= s_Constants.minTilesToBonusMatch &&
-            !s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGomatchesInfo.Card_Contained) &&
-            !s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGo2matchesInfo.Card_Contained);
+       // bool addBonus = totalMatches.Count() >= s_Constants.minTilesToBonusMatch &&
+            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGomatchesInfo.Card_Contained) &&
+            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGo2matchesInfo.Card_Contained);
 
         s_Tiles hitGoCache = null;
 
-        if (addBonus)
+        /*if (addBonus)
         {
             var sameTypeGo = hitGomatchesInfo.Matched_Tiles.Count() > 0 ? hitTile : hitTileTwo;
             hitGoCache = sameTypeGo.GetComponent<s_Tiles>();
-        }
+        }*/
 
         int timesRun = 1;
 
@@ -426,7 +259,9 @@ public class s_TileManager : MonoBehaviour
             Increase_Score((totalMatches.Count() - 2) * s_Constants.scoreBasicMatch);
 
             if (timesRun >= 2)
+            {
                 Increase_Score(s_Constants.scoreSubsequentMatch);
+            }
 
             foreach (var item in totalMatches)
             {
@@ -434,12 +269,12 @@ public class s_TileManager : MonoBehaviour
                 Remove_From_Scene(item);
             }
 
-           /* if (addBonus)
-            {
-                Create_Bonus(hitGoCache);
-            }*/
+            /* if (addBonus)
+             {
+                 Create_Bonus(hitGoCache);
+             }*/
 
-            addBonus = false;
+           // addBonus = false;
 
             var columns = totalMatches.Select(go => go.GetComponent<s_Tiles>().column).Distinct();
 
@@ -461,5 +296,175 @@ public class s_TileManager : MonoBehaviour
 
         state = GameState.None;
         Start_Check_For_Potential_Matches();
+    }
+
+    /*private void Create_Bonus(s_Tiles hitTileCache)
+    {
+        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.Type), BottomRight
+            + new Vector2(hitTileCache.column * TileSize.x,
+                hitTileCache.row * TileSize.y), Quaternion.identity) as GameObject;
+
+        tiles[hitTileCache.row, hitTileCache.column] = Bonus;
+        var BonusShape = Bonus.GetComponent<s_Tiles>();
+
+        BonusShape.Assign_Card(hitTileCache.Type, hitTileCache.row, hitTileCache.column);
+
+        BonusShape.Card |= s_CardType.RemoveWholeRowColumn;
+    }*/
+
+    private s_MovedTileInfo Create_New_Tile_In_Specific_Columns(IEnumerable<int> columnsWithMissingTiles)
+    {
+        s_MovedTileInfo newTileInfo = new s_MovedTileInfo();
+
+
+        foreach (int column in columnsWithMissingTiles)
+        {
+            var emptyItems = tiles.Get_Empty_Items_On_Column(column);
+            foreach (var item in emptyItems)
+            {
+                var go = Get_Random_Tile();
+                GameObject newTile = Instantiate(go, SpawnPositions[column], Quaternion.identity)
+                    as GameObject;
+
+                newTile.GetComponent<s_Tiles>().Assign_Card(go.GetComponent<s_Tiles>().Type, item.Row, item.Column);
+
+                if (s_Constants.rows - item.Row > newTileInfo.maxMoveDistance)
+                    newTileInfo.maxMoveDistance = s_Constants.rows - item.Row;
+
+                tiles[item.Row, item.Column] = newTile;
+                newTileInfo.Add_Tile(newTile);
+            }
+        }
+        return newTileInfo;
+    }
+
+    private GameObject Get_Random_Tile()
+    {
+        return TilePrefabs[Random.Range(0, TilePrefabs.Length)];
+    }
+
+    private void Move_And_Animate(IEnumerable<GameObject> movedGameObjects, int distance)
+    {
+        foreach (var item in movedGameObjects)
+        {
+            item.transform.positionTo(s_Constants.minMovingAnimTime * distance, BottomRight +
+                 new Vector2(item.GetComponent<s_Tiles>().column * TileSize.x, item.GetComponent<s_Tiles>().row * TileSize.y));
+        }
+    }
+
+    private void Remove_From_Scene(GameObject item)
+    {
+        // GameObject explosion = Get_Random_Explosion();
+        //  var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
+        //Destroy(newExplosion, s_Constants.removeAnimTime);
+        Destroy(item);
+    }
+
+    private void Initialise_Variables()
+    {
+        score = 0;
+        Show_Score();
+    }
+
+    private void Increase_Score(int amount)
+    {
+        score += amount;
+        Show_Score();
+    }
+
+    private void Show_Score()
+    {
+        ScoreText.text = "Score: " + score.ToString();
+    }
+
+    /*private GameObject Get_Random_Explosion()
+    {
+        return DestroyPrefabs[Random.Range(0, DestroyPrefabs.Length)];
+    }*/
+
+    /* private GameObject GetBonusType(string type)
+    {
+        string color = type.Split('_')[1].Trim();
+        foreach (var item in CardPrefabs)
+        {
+            if (item.GetComponent<s_Tiles>().Type.Contains(color))
+            {
+                return item;
+            }
+        }
+        throw new System.Exception("Wrong type");
+    }*/
+
+    private void Start_Check_For_Potential_Matches()
+    {
+        Stop_Check_For_Potential_Matches();
+        CheckPotentialMatchesCoroutine = Check_Potential_Matches();
+        StartCoroutine(CheckPotentialMatchesCoroutine);
+    }
+
+    private void Stop_Check_For_Potential_Matches()
+    {
+        if (AnimatePotentialMatchesCoroutine != null)
+        {
+            StopCoroutine(AnimatePotentialMatchesCoroutine);
+        }
+        if (CheckPotentialMatchesCoroutine != null)
+        {
+            StopCoroutine(CheckPotentialMatchesCoroutine);
+        }
+        Reset_Opacity_On_Potential_Matches();
+    }
+
+    private void Reset_Opacity_On_Potential_Matches()
+    {
+        if (potentialMatches != null)
+            foreach (var item in potentialMatches)
+            {
+                if (item == null) break;
+
+                Color c = item.GetComponent<SpriteRenderer>().color;
+                c.a = 1.0f;
+                item.GetComponent<SpriteRenderer>().color = c;
+            }
+    }
+
+    private IEnumerator Check_Potential_Matches()
+    {
+        yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
+        potentialMatches = s_GameUtilities.Find_Next_Match(tiles);
+        if (potentialMatches != null)
+        {
+            while (true)
+            {
+                AnimatePotentialMatchesCoroutine = s_GameUtilities.Game_Utilities(potentialMatches);
+                StartCoroutine(AnimatePotentialMatchesCoroutine);
+                yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
+            }
+        }
+    }
+
+    private GameObject Get_Specific_Tile_Or_Card(string info)
+    {
+        var tokens = info.Split('_');
+
+        if (tokens.Count() == 1)
+        {
+            foreach (var item in TilePrefabs)
+            {
+                if (item.GetComponent<s_Tiles>().Type.Contains(tokens[0].Trim()))
+                    return item;
+            }
+
+        }
+        /*else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
+        {
+            foreach (var item in CardPrefabs)
+            {
+                if (item.name.Contains(tokens[0].Trim()))
+                    return item;
+            }
+        }*/
+
+        throw new System.Exception("Wrong type, check your premade level");
     }
 }

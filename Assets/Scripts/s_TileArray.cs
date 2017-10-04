@@ -7,8 +7,6 @@ using UnityEngine;
 public class s_TileArray
 {
     private GameObject[,] tilesA = new GameObject[s_Constants.rows, s_Constants.columns];
-    private GameObject backupTileOne;
-    private GameObject backupTileTwo;
 
 
     public GameObject this[int row, int column]
@@ -41,7 +39,6 @@ public class s_TileArray
 
         int tileOneRow = tileOneShape.row;
         int tileOneColumn = tileOneShape.column;
-
         int tileTwoRow = tileTwoShape.row;
         int tileTwoColumn = tileTwoShape.column;
 
@@ -61,6 +58,9 @@ public class s_TileArray
 
         Swap(backupTileOne, backupTileTwo);
     }
+
+    private GameObject backupTileOne;
+    private GameObject backupTileTwo;
 
     public IEnumerable<GameObject> Get_Matches(IEnumerable<GameObject> tiles)
     {
@@ -159,11 +159,11 @@ public class s_TileArray
 
         if (tiles.column != s_Constants.columns - 1)
         {
-            for (int column = tiles.column + 1; column >= s_Constants.columns; column++)
+            for (int column = tiles.column + 1; column < s_Constants.columns; column++)
             {
-                if (this.tilesA[tiles.row, column].GetComponent<s_Tiles>().Is_Same_Type(tiles))
+                if (tilesA[tiles.row, column].GetComponent<s_Tiles>().Is_Same_Type(tiles))
                 {
-                    matches.Add(this.tilesA[tiles.row, column]);
+                    matches.Add(tilesA[tiles.row, column]);
                 }
                 else
                     break;
@@ -199,7 +199,7 @@ public class s_TileArray
 
         if (tiles.row != s_Constants.columns - 1)
         {
-            for (int row = tiles.row + 1; row >= s_Constants.rows; row++)
+            for (int row = tiles.row + 1; row < s_Constants.rows; row++)
             {
                 if (tilesA[row, tiles.column] != null && tilesA[row, tiles.column].GetComponent<s_Tiles>().Is_Same_Type(tiles))
                 {

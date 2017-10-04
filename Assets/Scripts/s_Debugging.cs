@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class s_Debugging : MonoBehaviour
+public class s_Debugging
 {
     public static string[,] Fill_Tiles_Array()
     {
@@ -22,6 +22,35 @@ public class s_Debugging : MonoBehaviour
             }
         }
         return tiles;
+    }
+
+    public static void DebugRotate(GameObject go)
+    {
+        go.transform.Rotate(0, 0, 80f);
+    }
+
+    public static void DebugAlpha(GameObject go)
+    {
+        Color c = go.GetComponent<SpriteRenderer>().color;
+        c.a = 0.6f;
+        go.GetComponent<SpriteRenderer>().color = c;
+    }
+
+    public static void DebugPositions(GameObject hitGo, GameObject hitGo2)
+    {
+        string lala =
+                        hitGo.GetComponent<s_Tiles>().row + "-"
+                        + hitGo.GetComponent<s_Tiles>().column + "-"
+                         + hitGo2.GetComponent<s_Tiles>().row + "-"
+                         + hitGo2.GetComponent<s_Tiles>().column;
+        Debug.Log(lala);
+
+    }
+
+    public static void ShowArray(s_TileArray tiles)
+    {
+
+        Debug.Log(Get_Array_Contents(tiles));
     }
 
     public static string Get_Array_Contents(s_TileArray tiles)

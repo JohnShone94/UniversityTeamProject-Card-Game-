@@ -79,24 +79,31 @@ public class s_GameUtilities
                 Is_Same_Type(tiles[row, column + 1].GetComponent<s_Tiles>()))
             {
                 if (row >= 1 && column >= 1)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row - 1, column - 1]
-                                };
-
+                        {
+                            tiles[row, column],
+                            tiles[row, column + 1],
+                            tiles[row - 1, column - 1]
+                        };
+                    }
+                }
                 if (row <= s_Constants.rows - 2 && column >= 1)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row + 1, column - 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row + 1, column - 1]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row, column + 1],
+                            tiles[row + 1, column - 1]
+                        };
+                    }
+                }
             }
         }
         return null;
@@ -112,24 +119,32 @@ public class s_GameUtilities
             {
 
                 if (row >= 1 && column <= s_Constants.columns - 3)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row - 1, column + 2].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row - 1, column + 2]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row, column + 1],
+                            tiles[row - 1, column + 2]
+                        };
+                    }
+                }
 
                 if (row <= s_Constants.rows - 2 && column <= s_Constants.columns - 3)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row + 1, column + 2].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row + 1, column + 2]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row, column + 1],
+                            tiles[row + 1, column + 2]
+                        };
+                    }
+                }
             }
         }
         return null;
@@ -145,11 +160,11 @@ public class s_GameUtilities
                Is_Same_Type(tiles[row, column + 3].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row, column + 3]
-                                };
+                {
+                    tiles[row, column],
+                    tiles[row, column + 1],
+                    tiles[row, column + 3]
+                };
             }
         }
         if (column >= 2 && column <= s_Constants.columns - 2)
@@ -160,11 +175,11 @@ public class s_GameUtilities
                Is_Same_Type(tiles[row, column - 2].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row, column + 1],
-                                    tiles[row, column -2]
-                                };
+                {
+                    tiles[row, column],
+                    tiles[row, column + 1],
+                    tiles[row, column -2]
+                };
             }
         }
         return null;
@@ -178,24 +193,32 @@ public class s_GameUtilities
                 Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()))
             {
                 if (column >= 1 && row >= 1)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row + 1, column],
-                                    tiles[row - 1, column -1]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row + 1, column],
+                            tiles[row - 1, column -1]
+                        };
+                    }
+                }
 
                 if (column <= s_Constants.columns - 2 && row >= 1)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row - 1, column + 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row + 1, column],
-                                    tiles[row - 1, column + 1]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row + 1, column],
+                            tiles[row - 1, column + 1]
+                        };
+                    }
+                }
             }
         }
         return null;
@@ -209,24 +232,31 @@ public class s_GameUtilities
                 Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()))
             {
                 if (column >= 1)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row + 2, column - 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row + 1, column],
-                                    tiles[row + 2, column -1]
-                                };
-
+                        {
+                            tiles[row, column],
+                            tiles[row + 1, column],
+                            tiles[row + 2, column -1]
+                        };
+                    }
+                }
                 if (column <= s_Constants.columns - 2)
+                {
                     if (tiles[row, column].GetComponent<s_Tiles>().
                     Is_Same_Type(tiles[row + 2, column + 1].GetComponent<s_Tiles>()))
+                    {
                         return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row+1, column],
-                                    tiles[row + 2, column + 1]
-                                };
+                        {
+                            tiles[row, column],
+                            tiles[row+1, column],
+                            tiles[row + 2, column + 1]
+                        };
+                    }
+                }
             }
         }
         return null;
@@ -242,11 +272,11 @@ public class s_GameUtilities
                Is_Same_Type(tiles[row + 3, column].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row + 1, column],
-                                    tiles[row + 3, column]
-                                };
+                {
+                    tiles[row, column],
+                    tiles[row + 1, column],
+                    tiles[row + 3, column]
+                };
             }
         }
         if (row >= 2 && row <= s_Constants.rows - 2)
@@ -257,11 +287,11 @@ public class s_GameUtilities
                Is_Same_Type(tiles[row - 2, column].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
-                                {
-                                    tiles[row, column],
-                                    tiles[row + 1, column],
-                                    tiles[row - 2, column]
-                                };
+                {
+                    tiles[row, column],
+                    tiles[row + 1, column],
+                    tiles[row - 2, column]
+                };
             }
         }
         return null;
