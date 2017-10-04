@@ -34,13 +34,13 @@ public class s_Debugging : MonoBehaviour
             {
                 if (tiles[row, column] == null)
                 {
-                    empty += "NULL |";
+                    empty += "NULL  |";
                 }
                 else
                 {
-                    var tile = tiles[row, column].GetComponent<s_TileShapes>();
+                    var tile = tiles[row, column].GetComponent<s_Tiles>();
                     empty += tile.row.ToString("D2") + "-" + tile.column.ToString("D2");
-                    empty += tile.type.Substring(5, 2);
+                    empty += tile.Type.Substring(5, 2);
 
                     if (s_Card_Utilities.Includes_Remove_Whole_Row_Column(tile.Card))
                     {

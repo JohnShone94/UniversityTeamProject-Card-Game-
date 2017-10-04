@@ -13,15 +13,15 @@ public class s_TileManager : MonoBehaviour
 
     private int score;
 
-    public readonly Vector2 BottomRight = new Vector2(-2.5f, -4.5f);
-    public readonly Vector2 TileSize = new Vector2(1f, 1f);
+    public readonly Vector2 BottomRight = new Vector2(-1f, -1f);
+    public readonly Vector2 TileSize = new Vector2(0.7f, 0.7f);
 
     private GameState state = GameState.None;
     private GameObject hitTile = null;
     private Vector2[] SpawnPositions;
-    private GameObject[] TilePrefabs;
-    private GameObject[] DestroyPrefabs;
-    private GameObject[] CardPrefabs;
+    public GameObject[] TilePrefabs;
+   // public GameObject[] DestroyPrefabs;
+   // public GameObject[] CardPrefabs;
 
     private IEnumerator CheckPotentialMatchesCoroutine;
     private IEnumerator AnimatePotentialMatchesCoroutine;
@@ -31,7 +31,7 @@ public class s_TileManager : MonoBehaviour
     //public SoundManager soundManager;
 
 
-    public void Awake()
+    void Awake()
     {
         DebugText.enabled = ShowDebugInfo;
     }
@@ -47,13 +47,13 @@ public class s_TileManager : MonoBehaviour
     {
         foreach (var tile in TilePrefabs)
         {
-            tile.GetComponent<s_TileShapes>().type = tile.name;
+            tile.GetComponent<s_Tiles>().Type = tile.name;
         }
 
-        foreach (var card in CardPrefabs)
+      /*  foreach (var card in CardPrefabs)
         {
-            card.GetComponent<s_TileShapes>().type = TilePrefabs.Where(x => x.GetComponent<s_TileShapes>().type.Contains(card.name.Split('_')[1].Trim())).Single().name;
-        }
+            card.GetComponent<s_Tiles>().Type = TilePrefabs.Where(x => x.GetComponent<s_Tiles>().Type.Contains(card.name.Split('_')[1].Trim())).Single().name;
+        }*/
     }
 
     private IEnumerator Check_Potential_Matches()
@@ -94,9 +94,13 @@ public class s_TileManager : MonoBehaviour
     private void Stop_Check_For_Potential_Matches()
     {
         if (AnimatePotentialMatchesCoroutine != null)
+        {
             StopCoroutine(AnimatePotentialMatchesCoroutine);
+        }
         if (CheckPotentialMatchesCoroutine != null)
+        { 
             StopCoroutine(CheckPotentialMatchesCoroutine);
+        }
         Reset_Opacity_On_Potential_Matches();
     }
 
@@ -126,7 +130,7 @@ public class s_TileManager : MonoBehaviour
     {
         GameObject go = Instantiate(newTile, BottomRight + new Vector2(column * TileSize.x, row * TileSize.y),Quaternion.identity) as GameObject;
 
-        go.GetComponent<s_TileShapes>().Assign_Card(newTile.GetComponent<s_TileShapes>().type, row, column);
+        go.GetComponent<s_Tiles>().Assign_Card(newTile.GetComponent<s_Tiles>().Type, row, column);
         tiles[row, column] = go;
     }
 
@@ -166,14 +170,14 @@ public class s_TileManager : MonoBehaviour
             {
                 GameObject newTile = Get_Random_Tile();
 
-                while (columns >= 2 && tiles[row, columns - 1].GetComponent<s_TileShapes>().Is_Same_Type(newTile.GetComponent<s_TileShapes>())
-                        && tiles[row, columns - 2].GetComponent<s_TileShapes>().Is_Same_Type(newTile.GetComponent<s_TileShapes>()))
+                while (columns >= 2 && tiles[row, columns - 1].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>())
+                        && tiles[row, columns - 2].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>()))
                 {
                     newTile = Get_Random_Tile();
                 }
 
-                while (row >= 2 && tiles[row - 1, columns].GetComponent<s_TileShapes>().Is_Same_Type(newTile.GetComponent<s_TileShapes>())
-                        && tiles[row - 2, columns].GetComponent<s_TileShapes>().Is_Same_Type(newTile.GetComponent<s_TileShapes>()))
+                while (row >= 2 && tiles[row - 1, columns].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>())
+                        && tiles[row - 2, columns].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>()))
                 {
                     newTile = Get_Random_Tile();
                 }
@@ -224,19 +228,19 @@ public class s_TileManager : MonoBehaviour
         {
             foreach (var item in TilePrefabs)
             {
-                if (item.GetComponent<s_TileShapes>().type.Contains(tokens[0].Trim()))
+                if (item.GetComponent<s_Tiles>().Type.Contains(tokens[0].Trim()))
                     return item;
             }
 
         }
-        else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
+        /*else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
         {
             foreach (var item in CardPrefabs)
             {
                 if (item.name.Contains(tokens[0].Trim()))
                     return item;
             }
-        }
+        }*/
 
         throw new System.Exception("Wrong type, check your premade level");
     }
@@ -252,27 +256,27 @@ public class s_TileManager : MonoBehaviour
         }
     }
 
-    private GameObject Get_Random_Explosion()
+    /*private GameObject Get_Random_Explosion()
     {
         return DestroyPrefabs[Random.Range(0, DestroyPrefabs.Length)];
-    }
+    }*/
 
-    private GameObject GetBonusType(string type)
+   /* private GameObject GetBonusType(string type)
     {
         string color = type.Split('_')[1].Trim();
         foreach (var item in CardPrefabs)
         {
-            if (item.GetComponent<s_TileShapes>().type.Contains(color))
+            if (item.GetComponent<s_Tiles>().Type.Contains(color))
                 return item;
         }
         throw new System.Exception("Wrong type");
-    }
+    }*/
 
     private void Remove_From_Scene(GameObject item)
     {
-        GameObject explosion = Get_Random_Explosion();
-        var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
-        Destroy(newExplosion, s_Constants.removeAnimTime);
+       // GameObject explosion = Get_Random_Explosion();
+      //  var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
+        //Destroy(newExplosion, s_Constants.removeAnimTime);
         Destroy(item);
     }
 
@@ -281,7 +285,7 @@ public class s_TileManager : MonoBehaviour
         foreach (var item in movedGameObjects)
         {
             //s_Constants.minMovingAnimTime * distance, BottomRight +
-            item.transform.position = new Vector2(item.GetComponent<s_TileShapes>().column * TileSize.x, item.GetComponent<s_TileShapes>().row * TileSize.y);
+            item.transform.position = new Vector2(item.GetComponent<s_Tiles>().column * TileSize.x, item.GetComponent<s_Tiles>().row * TileSize.y);
         }
     }
 
@@ -299,7 +303,7 @@ public class s_TileManager : MonoBehaviour
                 GameObject newTile = Instantiate(go, SpawnPositions[column], Quaternion.identity)
                     as GameObject;
 
-                newTile.GetComponent<s_TileShapes>().Assign_Card(go.GetComponent<s_TileShapes>().type, item.Row, item.Column);
+                newTile.GetComponent<s_Tiles>().Assign_Card(go.GetComponent<s_Tiles>().Type, item.Row, item.Column);
 
                 if (s_Constants.rows - item.Row > newTileInfo.maxMoveDistance)
                     newTileInfo.maxMoveDistance = s_Constants.rows - item.Row;
@@ -311,19 +315,19 @@ public class s_TileManager : MonoBehaviour
         return newTileInfo;
     }
 
-    private void Create_Bonus(s_TileShapes hitTileCache)
+    /*private void Create_Bonus(s_Tiles hitTileCache)
     {
-        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.type), BottomRight
+        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.Type), BottomRight
             + new Vector2(hitTileCache.column * TileSize.x,
                 hitTileCache.row * TileSize.y), Quaternion.identity) as GameObject;
 
         tiles[hitTileCache.row, hitTileCache.column] = Bonus;
-        var BonusShape = Bonus.GetComponent<s_TileShapes>();
+        var BonusShape = Bonus.GetComponent<s_Tiles>();
 
-        BonusShape.Assign_Card(hitTileCache.type, hitTileCache.row, hitTileCache.column);
+        BonusShape.Assign_Card(hitTileCache.Type, hitTileCache.row, hitTileCache.column);
 
         BonusShape.Card |= s_CardType.RemoveWholeRowColumn;
-    }
+    }*/
 
     void Update()
     {
@@ -343,22 +347,28 @@ public class s_TileManager : MonoBehaviour
                 {
                     hitTile = hit.collider.gameObject;
                     state = GameState.SelectionStarted;
+                    Debug.Log("Selected");
                 }
 
             }
         }
 
-        else if (state == GameState.SelectionStarted)
+        if (state == GameState.SelectionStarted)
         {
             if (Input.GetMouseButton(0))
             {
                 var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                Debug.Log(hit.collider.gameObject);
+                Debug.Log(hitTile);
+
 
                 if (hit.collider != null && hitTile != hit.collider.gameObject)
                 {
                     Stop_Check_For_Potential_Matches();
 
-                    if (!s_GameUtilities.Neighbour_Alignment(hitTile.GetComponent<s_TileShapes>(), hit.collider.gameObject.GetComponent<s_TileShapes>()))
+                    Debug.Log("boooop");
+
+                    if (!s_GameUtilities.Neighbour_Alignment(hitTile.GetComponent<s_Tiles>(), hit.collider.gameObject.GetComponent<s_Tiles>()))
                     {
                         state = GameState.None;
                     }
@@ -376,22 +386,22 @@ public class s_TileManager : MonoBehaviour
     private IEnumerator Find_Matches_And_Collapse(RaycastHit2D hit2)
     {
 
-        var hitGo2 = hit2.collider.gameObject;
-        tiles.Swap(hitTile, hitGo2);
+        var hitTileTwo = hit2.collider.gameObject;
+        tiles.Swap(hitTile, hitTileTwo);
 
-        hitTile.transform.position = hitGo2.transform.position;
-        hitGo2.transform.position = hitTile.transform.position;
+        hitTile.transform.position = hitTileTwo.transform.position;
+        hitTileTwo.transform.position = hitTile.transform.position;
         yield return new WaitForSeconds(s_Constants.animationTime);
 
         var hitGomatchesInfo = tiles.Get_Matches(hitTile);
-        var hitGo2matchesInfo = tiles.Get_Matches(hitGo2);
+        var hitGo2matchesInfo = tiles.Get_Matches(hitTileTwo);
 
         var totalMatches = hitGomatchesInfo.Matched_Tiles.Union(hitGo2matchesInfo.Matched_Tiles).Distinct();
 
         if (totalMatches.Count() < s_Constants.minTilesToMatch)
         {
-            hitTile.transform.position =  hitGo2.transform.position;
-            hitGo2.transform.position = hitTile.transform.position;
+            hitTile.transform.position =  hitTileTwo.transform.position;
+            hitTileTwo.transform.position = hitTile.transform.position;
             yield return new WaitForSeconds(s_Constants.animationTime);
 
             tiles.Undo_Swap();
@@ -401,12 +411,12 @@ public class s_TileManager : MonoBehaviour
             !s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGomatchesInfo.Card_Contained) &&
             !s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGo2matchesInfo.Card_Contained);
 
-        s_TileShapes hitGoCache = null;
+        s_Tiles hitGoCache = null;
 
         if (addBonus)
         {
-            var sameTypeGo = hitGomatchesInfo.Matched_Tiles.Count() > 0 ? hitTile : hitGo2;
-            hitGoCache = sameTypeGo.GetComponent<s_TileShapes>();
+            var sameTypeGo = hitGomatchesInfo.Matched_Tiles.Count() > 0 ? hitTile : hitTileTwo;
+            hitGoCache = sameTypeGo.GetComponent<s_Tiles>();
         }
 
         int timesRun = 1;
@@ -424,12 +434,14 @@ public class s_TileManager : MonoBehaviour
                 Remove_From_Scene(item);
             }
 
-            if (addBonus)
+           /* if (addBonus)
+            {
                 Create_Bonus(hitGoCache);
+            }*/
 
             addBonus = false;
 
-            var columns = totalMatches.Select(go => go.GetComponent<s_TileShapes>().column).Distinct();
+            var columns = totalMatches.Select(go => go.GetComponent<s_Tiles>().column).Distinct();
 
             var collapsedTileInfo = tiles.Collapse(columns);
 

@@ -28,7 +28,7 @@ public class s_GameUtilities
         }
     }
 
-    public static bool Neighbour_Alignment(s_TileShapes tileOne, s_TileShapes tileTwo)
+    public static bool Neighbour_Alignment(s_Tiles tileOne, s_Tiles tileTwo)
     {
         return (tileOne.column == tileTwo.column || tileOne.row == tileTwo.row) 
             && Mathf.Abs(tileOne.column - tileTwo.column) <= 1
@@ -75,12 +75,12 @@ public class s_GameUtilities
     {
         if (column <= s_Constants.columns - 2)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-                Is_Same_Type(tiles[row, column + 1].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+                Is_Same_Type(tiles[row, column + 1].GetComponent<s_Tiles>()))
             {
                 if (row >= 1 && column >= 1)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -89,8 +89,8 @@ public class s_GameUtilities
                                 };
 
                 if (row <= s_Constants.rows - 2 && column >= 1)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row + 1, column - 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row + 1, column - 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -107,13 +107,13 @@ public class s_GameUtilities
     {
         if (column <= s_Constants.columns - 3)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-                Is_Same_Type(tiles[row, column + 1].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+                Is_Same_Type(tiles[row, column + 1].GetComponent<s_Tiles>()))
             {
 
                 if (row >= 1 && column <= s_Constants.columns - 3)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row - 1, column + 2].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row - 1, column + 2].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -122,8 +122,8 @@ public class s_GameUtilities
                                 };
 
                 if (row <= s_Constants.rows - 2 && column <= s_Constants.columns - 3)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row + 1, column + 2].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row + 1, column + 2].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -139,10 +139,10 @@ public class s_GameUtilities
     {
         if (column <= s_Constants.columns - 4)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row, column + 1].GetComponent<s_TileShapes>()) &&
-               tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row, column + 3].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row, column + 1].GetComponent<s_Tiles>()) &&
+               tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row, column + 3].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
                                 {
@@ -154,10 +154,10 @@ public class s_GameUtilities
         }
         if (column >= 2 && column <= s_Constants.columns - 2)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row, column + 1].GetComponent<s_TileShapes>()) &&
-               tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row, column - 2].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row, column + 1].GetComponent<s_Tiles>()) &&
+               tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row, column - 2].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
                                 {
@@ -174,12 +174,12 @@ public class s_GameUtilities
     {
         if (row <= s_Constants.rows - 2)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-                Is_Same_Type(tiles[row + 1, column].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+                Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()))
             {
                 if (column >= 1 && row >= 1)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row - 1, column - 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -188,8 +188,8 @@ public class s_GameUtilities
                                 };
 
                 if (column <= s_Constants.columns - 2 && row >= 1)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row - 1, column + 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row - 1, column + 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -205,12 +205,12 @@ public class s_GameUtilities
     {
         if (row <= s_Constants.rows - 3)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-                Is_Same_Type(tiles[row + 1, column].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+                Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()))
             {
                 if (column >= 1)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row + 2, column - 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row + 2, column - 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -219,8 +219,8 @@ public class s_GameUtilities
                                 };
 
                 if (column <= s_Constants.columns - 2)
-                    if (tiles[row, column].GetComponent<s_TileShapes>().
-                    Is_Same_Type(tiles[row + 2, column + 1].GetComponent<s_TileShapes>()))
+                    if (tiles[row, column].GetComponent<s_Tiles>().
+                    Is_Same_Type(tiles[row + 2, column + 1].GetComponent<s_Tiles>()))
                         return new List<GameObject>()
                                 {
                                     tiles[row, column],
@@ -236,10 +236,10 @@ public class s_GameUtilities
     {
         if (row <= s_Constants.rows - 4)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row + 1, column].GetComponent<s_TileShapes>()) &&
-               tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row + 3, column].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()) &&
+               tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row + 3, column].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
                                 {
@@ -251,10 +251,10 @@ public class s_GameUtilities
         }
         if (row >= 2 && row <= s_Constants.rows - 2)
         {
-            if (tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row + 1, column].GetComponent<s_TileShapes>()) &&
-               tiles[row, column].GetComponent<s_TileShapes>().
-               Is_Same_Type(tiles[row - 2, column].GetComponent<s_TileShapes>()))
+            if (tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row + 1, column].GetComponent<s_Tiles>()) &&
+               tiles[row, column].GetComponent<s_Tiles>().
+               Is_Same_Type(tiles[row - 2, column].GetComponent<s_Tiles>()))
             {
                 return new List<GameObject>()
                                 {
