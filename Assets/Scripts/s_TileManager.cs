@@ -180,16 +180,11 @@ public class s_TileManager : MonoBehaviour
             if (Input.GetMouseButton(0))
             {
                 var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                Debug.Log(hit.collider.gameObject);
-                Debug.Log(hitTile);
 
 
                 if (hit.collider != null && hitTile != hit.collider.gameObject)
                 {
                     Stop_Check_For_Potential_Matches();
-
-                    Debug.Log("boooop");
-
                     if (!s_GameUtilities.Neighbour_Alignment(hitTile.GetComponent<s_Tiles>(), hit.collider.gameObject.GetComponent<s_Tiles>()))
                     {
                         state = GameState.None;
@@ -440,6 +435,33 @@ public class s_TileManager : MonoBehaviour
                 StartCoroutine(AnimatePotentialMatchesCoroutine);
                 yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
             }
+        }
+
+        if(potentialMatches == null)
+        {
+            Destroy_All_Tiles();
+
+            tiles = new s_TileArray();
+            SpawnPositions = new Vector2[s_Constants.columns];
+            var premadeLevel = s_Debugging.Fill_Tiles_Array();
+
+            for (int row = 0; row < s_Constants.rows; row++)
+            {
+                for (int column = 0; column < s_Constants.columns; column++)
+                {
+
+                    GameObject newTile = null;
+
+                    newTile = Get_Random_Tile();
+
+                    Instantiate_And_Place_New_Tile(row, column, newTile);
+
+                }
+            }
+
+            Setup_Spawn_Positions();
+
+
         }
     }
 
