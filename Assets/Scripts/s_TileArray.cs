@@ -77,32 +77,32 @@ public class s_TileArray
 
         var horizontalMatches = Get_Matches_Horizontally(tile);
 
-        //if (Contains_Destroy_Row_Column_Bonus(horizontalMatches))
-        //{
+        if (Contains_Destroy_Row_Column_Bonus(horizontalMatches))
+        {
             horizontalMatches = Get_Entire_Row(tile);
-            /*if (!s_Card_Utilities.Includes_Remove_Whole_Row_Column(matchesInfo.Card_Contained))
+            if (!s_Card_Utilities.Includes_Remove_Whole_Row_Column(matchesInfo.Card_Contained))
             {
                 matchesInfo.Card_Contained |= s_CardType.RemoveWholeRowColumn;
-            }*/
-       // }
+            }
+        }
         matchesInfo.Add_Matched_Tiles_Range(horizontalMatches);
 
         var verticalMatches = Get_Matches_Vertically(tile);
 
-        //if (Contains_Destroy_Row_Column_Bonus(verticalMatches))
-        //{
+        if (Contains_Destroy_Row_Column_Bonus(verticalMatches))
+        {
             verticalMatches = Get_Entire_Column(tile);
-           /* if (!s_Card_Utilities.Includes_Remove_Whole_Row_Column(matchesInfo.Card_Contained))
+            if (!s_Card_Utilities.Includes_Remove_Whole_Row_Column(matchesInfo.Card_Contained))
             {
                 matchesInfo.Card_Contained |= s_CardType.RemoveWholeRowColumn;
-            }*/
-        //}
+            }
+        }
         matchesInfo.Add_Matched_Tiles_Range(verticalMatches);
 
         return matchesInfo;
     }
 
-    /*private bool Contains_Destroy_Row_Column_Bonus(IEnumerable<GameObject> matches)
+    private bool Contains_Destroy_Row_Column_Bonus(IEnumerable<GameObject> matches)
     {
         if (matches.Count() >= s_Constants.minTilesToMatch)
         {
@@ -115,7 +115,7 @@ public class s_TileArray
             }
         }
         return false;
-    }*/
+    }
     private IEnumerable<GameObject> Get_Entire_Row(GameObject tile)
     {
         List<GameObject> matches = new List<GameObject>();

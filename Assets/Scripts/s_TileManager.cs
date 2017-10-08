@@ -20,11 +20,16 @@ public class s_TileManager : MonoBehaviour
     private GameObject hitTile = null;
     private Vector2[] SpawnPositions;
     public GameObject[] TilePrefabs;
+   // public GameObject[] DestroyPrefabs;
+   // public GameObject[] CardPrefabs;
 
     private IEnumerator CheckPotentialMatchesCoroutine;
     private IEnumerator AnimatePotentialMatchesCoroutine;
 
     IEnumerable<GameObject> potentialMatches;
+
+    //public SoundManager soundManager;
+
 
     void Awake()
     {
@@ -33,21 +38,26 @@ public class s_TileManager : MonoBehaviour
 
     void Start()
     {
-        Initialise_Types_On_Prefab_Tiles();
+        Initialise_Types_On_Prefab_Shapes_And_Cards();
         Initialise_Tile_And_Spawn_Positions();
         Start_Check_For_Potential_Matches();
     }
 
-    private void Initialise_Types_On_Prefab_Tiles()
+    private void Initialise_Types_On_Prefab_Shapes_And_Cards()
     {
         foreach (var tile in TilePrefabs)
         {
             tile.GetComponent<s_Tiles>().Type = tile.name;
         }
+
+      /*  foreach (var card in CardPrefabs)
+        {
+            card.GetComponent<s_Tiles>().Type = TilePrefabs.Where(x => x.GetComponent<s_Tiles>().Type.Contains(card.name.Split('_')[1].Trim())).Single().name;
+        }*/
     }
 
 
-    public void Initialize_Tile_And_Spawn_Positions_From_Premade_Level()
+    public void Initialize_Candy_And_Spawn_Positions_From_Premade_Level()
     {
         Initialise_Variables();
 
@@ -67,7 +77,7 @@ public class s_TileManager : MonoBehaviour
 
                 GameObject newTile = null;
 
-                newTile = Get_Specific_Tile(premadeLevel[row, column]);
+                newTile = Get_Specific_Tile_Or_Card(premadeLevel[row, column]);
 
                 Instantiate_And_Place_New_Tile(row, column, newTile);
 
@@ -116,6 +126,7 @@ public class s_TileManager : MonoBehaviour
     private void Instantiate_And_Place_New_Tile(int row, int column, GameObject newTile)
     {
         GameObject go = Instantiate(newTile, BottomRight + new Vector2(column * TileSize.x, row * TileSize.y), Quaternion.identity) as GameObject;
+
         go.GetComponent<s_Tiles>().Assign_Card(newTile.GetComponent<s_Tiles>().Type, row, column);
         tiles[row, column] = go;
     }
@@ -224,6 +235,18 @@ public class s_TileManager : MonoBehaviour
             tiles.Undo_Swap();
         }
 
+       // bool addBonus = totalMatches.Count() >= s_Constants.minTilesToBonusMatch &&
+            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGomatchesInfo.Card_Contained) &&
+            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGo2matchesInfo.Card_Contained);
+
+        s_Tiles hitGoCache = null;
+
+        /*if (addBonus)
+        {
+            var sameTypeGo = hitGomatchesInfo.Matched_Tiles.Count() > 0 ? hitTile : hitTileTwo;
+            hitGoCache = sameTypeGo.GetComponent<s_Tiles>();
+        }*/
+
         int timesRun = 1;
 
         while (totalMatches.Count() >= s_Constants.minTilesToMatch)
@@ -240,6 +263,13 @@ public class s_TileManager : MonoBehaviour
                 tiles.Remove(item);
                 Remove_From_Scene(item);
             }
+
+            /* if (addBonus)
+             {
+                 Create_Bonus(hitGoCache);
+             }*/
+
+           // addBonus = false;
 
             var columns = totalMatches.Select(go => go.GetComponent<s_Tiles>().column).Distinct();
 
@@ -262,6 +292,20 @@ public class s_TileManager : MonoBehaviour
         state = GameState.None;
         Start_Check_For_Potential_Matches();
     }
+
+    /*private void Create_Bonus(s_Tiles hitTileCache)
+    {
+        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.Type), BottomRight
+            + new Vector2(hitTileCache.column * TileSize.x,
+                hitTileCache.row * TileSize.y), Quaternion.identity) as GameObject;
+
+        tiles[hitTileCache.row, hitTileCache.column] = Bonus;
+        var BonusShape = Bonus.GetComponent<s_Tiles>();
+
+        BonusShape.Assign_Card(hitTileCache.Type, hitTileCache.row, hitTileCache.column);
+
+        BonusShape.Card |= s_CardType.RemoveWholeRowColumn;
+    }*/
 
     private s_MovedTileInfo Create_New_Tile_In_Specific_Columns(IEnumerable<int> columnsWithMissingTiles)
     {
@@ -305,6 +349,9 @@ public class s_TileManager : MonoBehaviour
 
     private void Remove_From_Scene(GameObject item)
     {
+        // GameObject explosion = Get_Random_Explosion();
+        //  var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
+        //Destroy(newExplosion, s_Constants.removeAnimTime);
         Destroy(item);
     }
 
@@ -324,6 +371,24 @@ public class s_TileManager : MonoBehaviour
     {
         ScoreText.text = "Score: " + score.ToString();
     }
+
+    /*private GameObject Get_Random_Explosion()
+    {
+        return DestroyPrefabs[Random.Range(0, DestroyPrefabs.Length)];
+    }*/
+
+    /* private GameObject GetBonusType(string type)
+    {
+        string color = type.Split('_')[1].Trim();
+        foreach (var item in CardPrefabs)
+        {
+            if (item.GetComponent<s_Tiles>().Type.Contains(color))
+            {
+                return item;
+            }
+        }
+        throw new System.Exception("Wrong type");
+    }*/
 
     private void Start_Check_For_Potential_Matches()
     {
@@ -400,7 +465,7 @@ public class s_TileManager : MonoBehaviour
         }
     }
 
-    private GameObject Get_Specific_Tile(string info)
+    private GameObject Get_Specific_Tile_Or_Card(string info)
     {
         var tokens = info.Split('_');
 
@@ -413,6 +478,14 @@ public class s_TileManager : MonoBehaviour
             }
 
         }
+        /*else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
+        {
+            foreach (var item in CardPrefabs)
+            {
+                if (item.name.Contains(tokens[0].Trim()))
+                    return item;
+            }
+        }*/
 
         throw new System.Exception("Wrong type, check your premade level");
     }
