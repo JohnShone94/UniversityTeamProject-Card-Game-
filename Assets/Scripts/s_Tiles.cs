@@ -27,7 +27,7 @@ public class s_Tiles : MonoBehaviour
         return string.Compare(this.Type, (otherShape as s_Tiles).Type) == 0;
     }
 
-    public void Assign_Card(string setType, int setRow, int setColumn)
+   public void Assign_Card(string setType, int setRow, int setColumn)
     {
         if(string.IsNullOrEmpty(setType))
         {

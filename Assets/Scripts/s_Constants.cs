@@ -16,9 +16,9 @@ public static class s_Constants
     public static readonly float animOpacityFrameDelay = 0.05f;
 
     public static readonly int minTilesToMatch = 3;
-    public static readonly int minTilesToBonusMatch = 4;
+    //public static readonly int minTilesToBonusMatch = 4;
 
-    public static readonly int scoreBasicMatch = 60;
-    public static readonly int scoreSubsequentMatch = 500;
+    public static readonly int scoreBasicMatch = 20;
+    public static readonly int scoreSubsequentMatch = 100;
 
 }

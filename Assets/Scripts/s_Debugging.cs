@@ -71,7 +71,7 @@ public class s_Debugging
                     empty += tile.row.ToString("D2") + "-" + tile.column.ToString("D2");
                     empty += tile.Type.Substring(5, 2);
 
-                    if (s_Card_Utilities.Includes_Remove_Whole_Row_Column(tile.Card))
+                    /*if (s_Card_Utilities.Includes_Remove_Whole_Row_Column(tile.Card))
                     {
                         empty += "B";
                     }
@@ -79,7 +79,7 @@ public class s_Debugging
                     {
                         empty += " ";
                     }
-                    empty += " | ";
+                    empty += " | ";*/
                 }
             }
             empty += Environment.NewLine;
