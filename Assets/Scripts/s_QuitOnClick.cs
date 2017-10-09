@@ -6,6 +6,6 @@ public class s_QuitOnClick : MonoBehaviour {
 
 	public void Quit()
 	{
-		UnityEditor.EditorApplication.isPlaying = false;
+        Application.LoadLevel(0);
 	}
 }
