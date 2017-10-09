@@ -1,39 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class s_PauseMenu : MonoBehaviour
 {
-    public bool paused = false;
-
-
-    void Start ()
+    bool paused = false;
+    public void Paused()
     {
-    }
-
-    void Update()
-    {
-        if (paused == true)
-        {
-            Time.timeScale = 0;
-        }
-        else
+        if (paused)
         {
             Time.timeScale = 1;
-        }
-
-    }
-
-
-    public void PauseGame()
-    {
-        if (paused == false)
-        {
-            paused = true;
+            paused = false;
         }
         else
         {
-            paused = false;
+            Time.timeScale = 0;
+            paused = true;
         }
+
     }
 }
