@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class s_TileManager : MonoBehaviour
 {
-    public Text DebugText, ScoreText;
+    public Text DebugText, ScoreText, TimeRemainingText;
     public bool ShowDebugInfo = false;
 
     public s_TileArray tiles;
@@ -29,7 +29,8 @@ public class s_TileManager : MonoBehaviour
     IEnumerable<GameObject> potentialMatches;
 
     //public SoundManager soundManager;
-
+	int timeRemaining = 60;
+	bool gameInPlay = true;
 
     void Awake()
     {
@@ -38,10 +39,28 @@ public class s_TileManager : MonoBehaviour
 
     void Start()
     {
+		StartCoroutine (OneSecond ());
         Initialise_Types_On_Prefab_Shapes_And_Cards();
         Initialise_Tile_And_Spawn_Positions();
         Start_Check_For_Potential_Matches();
     }
+
+	IEnumerator OneSecond(){
+		while (1 == 1) {
+			yield return new WaitForSeconds (1.0f);
+			timeRemaining--;
+			TimeRemainingText.text = "Time: " + timeRemaining;
+			if (timeRemaining <= 0) {
+				EndGame ();
+				break;
+			}
+		}
+	}
+
+	void EndGame() {
+		gameInPlay = false;
+		GetComponent<s_Scoreboard> ().checkForHighScore (score);
+	}
 
     private void Initialise_Types_On_Prefab_Shapes_And_Cards()
     {
@@ -153,6 +172,10 @@ public class s_TileManager : MonoBehaviour
 
     void Update()
     {
+		if (!gameInPlay) {
+			return;
+		}
+
         if (ShowDebugInfo)
         {
             DebugText.text = s_Debugging.Get_Array_Contents(tiles);
@@ -180,16 +203,11 @@ public class s_TileManager : MonoBehaviour
             if (Input.GetMouseButton(0))
             {
                 var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                Debug.Log(hit.collider.gameObject);
-                Debug.Log(hitTile);
 
 
                 if (hit.collider != null && hitTile != hit.collider.gameObject)
                 {
                     Stop_Check_For_Potential_Matches();
-
-                    Debug.Log("boooop");
-
                     if (!s_GameUtilities.Neighbour_Alignment(hitTile.GetComponent<s_Tiles>(), hit.collider.gameObject.GetComponent<s_Tiles>()))
                     {
                         state = GameState.None;
@@ -440,6 +458,33 @@ public class s_TileManager : MonoBehaviour
                 StartCoroutine(AnimatePotentialMatchesCoroutine);
                 yield return new WaitForSeconds(s_Constants.timeBeforeMatchCheck);
             }
+        }
+
+        if(potentialMatches == null)
+        {
+            Destroy_All_Tiles();
+
+            tiles = new s_TileArray();
+            SpawnPositions = new Vector2[s_Constants.columns];
+            var premadeLevel = s_Debugging.Fill_Tiles_Array();
+
+            for (int row = 0; row < s_Constants.rows; row++)
+            {
+                for (int column = 0; column < s_Constants.columns; column++)
+                {
+
+                    GameObject newTile = null;
+
+                    newTile = Get_Random_Tile();
+
+                    Instantiate_And_Place_New_Tile(row, column, newTile);
+
+                }
+            }
+
+            Setup_Spawn_Positions();
+
+
         }
     }
 
