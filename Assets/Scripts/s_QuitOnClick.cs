@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class s_QuitOnClick : MonoBehaviour {
 
 	public void Quit()
 	{
-		UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
 	}
 }

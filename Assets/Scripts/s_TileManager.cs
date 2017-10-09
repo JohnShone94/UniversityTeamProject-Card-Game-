@@ -20,16 +20,13 @@ public class s_TileManager : MonoBehaviour
     private GameObject hitTile = null;
     private Vector2[] SpawnPositions;
     public GameObject[] TilePrefabs;
-   // public GameObject[] DestroyPrefabs;
-   // public GameObject[] CardPrefabs;
 
     private IEnumerator CheckPotentialMatchesCoroutine;
     private IEnumerator AnimatePotentialMatchesCoroutine;
 
     IEnumerable<GameObject> potentialMatches;
 
-    //public SoundManager soundManager;
-	int timeRemaining = 60;
+	int timeRemaining = 180;
 	bool gameInPlay = true;
 
     void Awake()
@@ -46,7 +43,7 @@ public class s_TileManager : MonoBehaviour
     }
 
 	IEnumerator OneSecond(){
-		while (1 == 1) {
+		while (1 == 1 && gameInPlay) {
 			yield return new WaitForSeconds (1.0f);
 			timeRemaining--;
 			TimeRemainingText.text = "Time: " + timeRemaining;
