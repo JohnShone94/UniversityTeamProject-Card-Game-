@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class s_TileManager : MonoBehaviour
@@ -24,9 +25,15 @@ public class s_TileManager : MonoBehaviour
     private IEnumerator CheckPotentialMatchesCoroutine;
     private IEnumerator AnimatePotentialMatchesCoroutine;
 
+    public AudioClip timeRunningOut;
+    public AudioClip moveTile;
+    public AudioClip matched;
+    public AudioClip music;
+
+
     IEnumerable<GameObject> potentialMatches;
 
-	int timeRemaining = 180;
+	int timeRemaining = 60;
 	bool gameInPlay = true;
 
     void Awake()
@@ -40,13 +47,31 @@ public class s_TileManager : MonoBehaviour
         Initialise_Types_On_Prefab_Shapes_And_Cards();
         Initialise_Tile_And_Spawn_Positions();
         Start_Check_For_Potential_Matches();
+
+        gameObject.GetComponent<s_SoundManager>().PlayMusic(music);
     }
 
-	IEnumerator OneSecond(){
-		while (1 == 1 && gameInPlay) {
-			yield return new WaitForSeconds (1.0f);
-			timeRemaining--;
+	IEnumerator OneSecond()
+    {
+        Time.timeScale = 1;
+        TimeRemainingText.text = "1";
+        yield return new WaitForSeconds(1.0f);
+        TimeRemainingText.text = "2";
+        yield return new WaitForSeconds(1.0f);
+        TimeRemainingText.text = "3";
+        yield return new WaitForSeconds(1.0f);
+        TimeRemainingText.text = "BEGIN";
+        while (1 == 1 && gameInPlay)
+        {
+            yield return new WaitForSeconds (1.0f);
+            timeRemaining--;
 			TimeRemainingText.text = "Time: " + timeRemaining;
+
+            if(timeRemaining <= 6)
+            {
+                gameObject.GetComponent<s_SoundManager>().PlaySound(timeRunningOut);
+            }
+
 			if (timeRemaining <= 0) {
 				EndGame ();
 				break;
@@ -54,8 +79,10 @@ public class s_TileManager : MonoBehaviour
 		}
 	}
 
-	void EndGame() {
+	void EndGame()
+    {
 		gameInPlay = false;
+        SceneManager.LoadScene(2);
 		GetComponent<s_Scoreboard> ().checkForHighScore (score);
 	}
 
@@ -65,15 +92,10 @@ public class s_TileManager : MonoBehaviour
         {
             tile.GetComponent<s_Tiles>().Type = tile.name;
         }
-
-      /*  foreach (var card in CardPrefabs)
-        {
-            card.GetComponent<s_Tiles>().Type = TilePrefabs.Where(x => x.GetComponent<s_Tiles>().Type.Contains(card.name.Split('_')[1].Trim())).Single().name;
-        }*/
     }
 
 
-    public void Initialize_Candy_And_Spawn_Positions_From_Premade_Level()
+    public void Initialize_Tiles_And_Spawn_Positions_From_Premade_Level()
     {
         Initialise_Variables();
 
@@ -139,6 +161,36 @@ public class s_TileManager : MonoBehaviour
         Setup_Spawn_Positions();
     }
 
+    public void Reset_Tiles()
+    {
+        tiles = new s_TileArray();
+        SpawnPositions = new Vector2[s_Constants.columns];
+
+        for (int row = 0; row < s_Constants.rows; row++)
+        {
+            for (int columns = 0; columns < s_Constants.columns; columns++)
+            {
+                GameObject newTile = Get_Random_Tile();
+
+                while (columns >= 2 && tiles[row, columns - 1].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>())
+                        && tiles[row, columns - 2].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>()))
+                {
+                    newTile = Get_Random_Tile();
+                }
+
+                while (row >= 2 && tiles[row - 1, columns].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>())
+                        && tiles[row - 2, columns].GetComponent<s_Tiles>().Is_Same_Type(newTile.GetComponent<s_Tiles>()))
+                {
+                    newTile = Get_Random_Tile();
+                }
+
+                Instantiate_And_Place_New_Tile(row, columns, newTile);
+
+            }
+        }
+
+        Setup_Spawn_Positions();
+    }
     private void Instantiate_And_Place_New_Tile(int row, int column, GameObject newTile)
     {
         GameObject go = Instantiate(newTile, BottomRight + new Vector2(column * TileSize.x, row * TileSize.y), Quaternion.identity) as GameObject;
@@ -169,7 +221,8 @@ public class s_TileManager : MonoBehaviour
 
     void Update()
     {
-		if (!gameInPlay) {
+		if (!gameInPlay)
+        {
 			return;
 		}
 
@@ -248,6 +301,7 @@ public class s_TileManager : MonoBehaviour
 
         if (totalMatches.Count() < s_Constants.minTilesToMatch)
         {
+            gameObject.GetComponent<s_SoundManager>().PlaySound(moveTile);
             hitTile.transform.positionTo(s_Constants.animationTime, hitTileTwo.transform.position);
             hitTileTwo.transform.positionTo(s_Constants.animationTime, hitTile.transform.position);
             yield return new WaitForSeconds(s_Constants.animationTime);
@@ -255,22 +309,12 @@ public class s_TileManager : MonoBehaviour
             tiles.Undo_Swap();
         }
 
-       // bool addBonus = totalMatches.Count() >= s_Constants.minTilesToBonusMatch &&
-            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGomatchesInfo.Card_Contained) &&
-            //!s_Card_Utilities.Includes_Remove_Whole_Row_Column(hitGo2matchesInfo.Card_Contained);
-
-        s_Tiles hitGoCache = null;
-
-        /*if (addBonus)
-        {
-            var sameTypeGo = hitGomatchesInfo.Matched_Tiles.Count() > 0 ? hitTile : hitTileTwo;
-            hitGoCache = sameTypeGo.GetComponent<s_Tiles>();
-        }*/
-
         int timesRun = 1;
 
         while (totalMatches.Count() >= s_Constants.minTilesToMatch)
         {
+            gameObject.GetComponent<s_SoundManager>().PlaySound(matched);
+
             Increase_Score((totalMatches.Count() - 2) * s_Constants.scoreBasicMatch);
 
             if (timesRun >= 2)
@@ -283,13 +327,6 @@ public class s_TileManager : MonoBehaviour
                 tiles.Remove(item);
                 Remove_From_Scene(item);
             }
-
-            /* if (addBonus)
-             {
-                 Create_Bonus(hitGoCache);
-             }*/
-
-           // addBonus = false;
 
             var columns = totalMatches.Select(go => go.GetComponent<s_Tiles>().column).Distinct();
 
@@ -312,20 +349,6 @@ public class s_TileManager : MonoBehaviour
         state = GameState.None;
         Start_Check_For_Potential_Matches();
     }
-
-    /*private void Create_Bonus(s_Tiles hitTileCache)
-    {
-        GameObject Bonus = Instantiate(GetBonusType(hitTileCache.Type), BottomRight
-            + new Vector2(hitTileCache.column * TileSize.x,
-                hitTileCache.row * TileSize.y), Quaternion.identity) as GameObject;
-
-        tiles[hitTileCache.row, hitTileCache.column] = Bonus;
-        var BonusShape = Bonus.GetComponent<s_Tiles>();
-
-        BonusShape.Assign_Card(hitTileCache.Type, hitTileCache.row, hitTileCache.column);
-
-        BonusShape.Card |= s_CardType.RemoveWholeRowColumn;
-    }*/
 
     private s_MovedTileInfo Create_New_Tile_In_Specific_Columns(IEnumerable<int> columnsWithMissingTiles)
     {
@@ -369,9 +392,6 @@ public class s_TileManager : MonoBehaviour
 
     private void Remove_From_Scene(GameObject item)
     {
-        // GameObject explosion = Get_Random_Explosion();
-        //  var newExplosion = Instantiate(explosion, item.transform.position, Quaternion.identity) as GameObject;
-        //Destroy(newExplosion, s_Constants.removeAnimTime);
         Destroy(item);
     }
 
@@ -391,24 +411,6 @@ public class s_TileManager : MonoBehaviour
     {
         ScoreText.text = "Score: " + score.ToString();
     }
-
-    /*private GameObject Get_Random_Explosion()
-    {
-        return DestroyPrefabs[Random.Range(0, DestroyPrefabs.Length)];
-    }*/
-
-    /* private GameObject GetBonusType(string type)
-    {
-        string color = type.Split('_')[1].Trim();
-        foreach (var item in CardPrefabs)
-        {
-            if (item.GetComponent<s_Tiles>().Type.Contains(color))
-            {
-                return item;
-            }
-        }
-        throw new System.Exception("Wrong type");
-    }*/
 
     private void Start_Check_For_Potential_Matches()
     {
@@ -461,27 +463,7 @@ public class s_TileManager : MonoBehaviour
         {
             Destroy_All_Tiles();
 
-            tiles = new s_TileArray();
-            SpawnPositions = new Vector2[s_Constants.columns];
-            var premadeLevel = s_Debugging.Fill_Tiles_Array();
-
-            for (int row = 0; row < s_Constants.rows; row++)
-            {
-                for (int column = 0; column < s_Constants.columns; column++)
-                {
-
-                    GameObject newTile = null;
-
-                    newTile = Get_Random_Tile();
-
-                    Instantiate_And_Place_New_Tile(row, column, newTile);
-
-                }
-            }
-
-            Setup_Spawn_Positions();
-
-
+            Reset_Tiles();
         }
     }
 
@@ -498,14 +480,6 @@ public class s_TileManager : MonoBehaviour
             }
 
         }
-        /*else if (tokens.Count() == 2 && tokens[1].Trim() == "B")
-        {
-            foreach (var item in CardPrefabs)
-            {
-                if (item.name.Contains(tokens[0].Trim()))
-                    return item;
-            }
-        }*/
 
         throw new System.Exception("Wrong type, check your premade level");
     }

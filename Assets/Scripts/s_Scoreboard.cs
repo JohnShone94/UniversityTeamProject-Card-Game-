@@ -3,32 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class s_Scoreboard : MonoBehaviour {
+public class s_Scoreboard : MonoBehaviour
+{
 	public Text[] highScores;
 
 	int [] highScoreValues;
-	// Use this for initialization
-	void Start () {
+
+	void Start ()
+    {
 		highScoreValues = new int[highScores.Length];
-		for (int x = 0; x < highScores.Length; x++) {
+
+		for (int x = 0; x < highScores.Length; x++)
+        {
 			highScoreValues [x] = PlayerPrefs.GetInt ("highScoreValues" + x);
 		
 		}
 		drawScores ();
 	}
 
-	void SaveScores(){
-		for (int x = 0; x < highScores.Length; x++) {
+	void SaveScores()
+    {
+		for (int x = 0; x < highScores.Length; x++)
+        {
 			PlayerPrefs.SetInt ("highScoreValues" + x,highScoreValues [x]);
 		}
 
 
 	}
 
-	public void checkForHighScore(int _value){
-		for (int x = 0; x < highScores.Length; x++) {
-			if (_value > highScoreValues [x]) {
-				for (int y = highScores.Length - 1; y > x; y--) {
+	public void checkForHighScore(int _value)
+    {
+		for (int x = 0; x < highScores.Length; x++)
+        {
+			if (_value > highScoreValues [x])
+            {
+				for (int y = highScores.Length - 1; y > x; y--)
+                {
 					highScoreValues [y] = highScoreValues [y - 1];
 
 				}
@@ -43,8 +53,10 @@ public class s_Scoreboard : MonoBehaviour {
 
 	}
 
-	void drawScores(){
-		for (int x = 0; x < highScores.Length; x++) {
+	void drawScores()
+    {
+		for (int x = 0; x < highScores.Length; x++)
+        {
 			highScores [x].text = highScoreValues [x].ToString ();
 		}
 

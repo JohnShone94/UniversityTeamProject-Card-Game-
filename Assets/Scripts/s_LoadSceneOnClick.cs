@@ -7,5 +7,5 @@ public class s_LoadSceneOnClick : MonoBehaviour {
 	public void LoadByIndex(int sceneIndex)
 	{
 		SceneManager.LoadScene (sceneIndex);
-	}
+    }
 }
