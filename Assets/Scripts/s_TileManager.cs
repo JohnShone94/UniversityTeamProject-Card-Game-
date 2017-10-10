@@ -33,7 +33,7 @@ public class s_TileManager : MonoBehaviour
 
     IEnumerable<GameObject> potentialMatches;
 
-	int timeRemaining = 60;
+	int timeRemaining = 120;
 	bool gameInPlay = true;
 
     void Awake()
@@ -54,11 +54,11 @@ public class s_TileManager : MonoBehaviour
 	IEnumerator OneSecond()
     {
         Time.timeScale = 1;
-        TimeRemainingText.text = "1";
+        TimeRemainingText.text = "3";
         yield return new WaitForSeconds(1.0f);
         TimeRemainingText.text = "2";
         yield return new WaitForSeconds(1.0f);
-        TimeRemainingText.text = "3";
+        TimeRemainingText.text = "1";
         yield return new WaitForSeconds(1.0f);
         TimeRemainingText.text = "BEGIN";
         while (1 == 1 && gameInPlay)
